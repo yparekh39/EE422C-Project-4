@@ -115,5 +115,35 @@ public abstract class Critter {
 	public static void worldTimeStep() {
 	}
 	
-	public static void displayWorld() {}
+	public static void displayWorld() {
+		char[][] world = new char[Params.world_width+2][Params.world_height+2];
+		for (int i = 0; i < (Params.world_width+2); i++) {
+			for (int j = 0; j < (Params.world_height+2); j++) {
+				if ((i == 0 && j == 0) || (i == (Params.world_width+1) && j == 0) || (i == 0 && j == (Params.world_height+1)) || (i == (Params.world_width+1) && j == (Params.world_height+1))) {
+					world[i][j] = '+';
+				}
+				else if (i == 0) {
+					world[i][j] = '-';
+				}
+				else if (i == (Params.world_width+1)){
+					world[i][j] = '-';
+				}
+				else if (j == 0) {
+					world[i][j] = '|';
+				}
+				else if (j == (Params.world_height+1)) {
+					world[i][j] = '|';
+				}
+				else {
+					world[i][j] = ' ';
+				}
+			}
+		}
+		for (int i = 0; i < (Params.world_width+2); i++){
+			System.out.println();
+			for (int j = 0; j < (Params.world_height+2); j++) {
+				System.out.print(world[i][j]);
+			}
+		}
+	}
 }
