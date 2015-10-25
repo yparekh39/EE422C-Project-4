@@ -41,7 +41,36 @@ public abstract class Critter {
 	private int y_coord;
 	
 	protected final void walk(int direction) {
-		
+		switch (direction) {
+			case 0:
+				this.x_coord = (x_coord+1) % Params.world_width;
+				break;
+			case 1:
+				this.x_coord = (x_coord+1) % Params.world_width;
+				this.y_coord = (y_coord-1) % Params.world_height;
+				break;
+			case 2:
+				this.y_coord = (y_coord-1) % Params.world_height;
+				break;
+			case 3:
+				this.y_coord = (y_coord-1) % Params.world_height;
+				this.x_coord = (x_coord-1) % Params.world_width;
+				break;
+			case 4:
+				this.x_coord = (x_coord-1) % Params.world_width;
+				break;
+			case 5:
+				this.x_coord = (x_coord-1) % Params.world_width;
+				this.y_coord = (y_coord+1) % Params.world_height;
+				break;
+			case 6:
+				this.y_coord = (y_coord+1) % Params.world_height;
+				break;
+			case 7:
+				this.x_coord = (x_coord+1) % Params.world_width;
+				this.y_coord = (y_coord+1) % Params.world_height;
+				break;
+		}
 	}
 	
 	protected final void run(int direction) {
