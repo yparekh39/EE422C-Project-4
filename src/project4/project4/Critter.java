@@ -12,6 +12,7 @@
  */
 package project4;
 
+import java.util.Iterator;
 import java.util.List;
 
 /* see the PDF for descriptions of the methods and fields in this class
@@ -40,6 +41,7 @@ public abstract class Critter {
 	private int y_coord;
 	
 	protected final void walk(int direction) {
+		
 	}
 	
 	protected final void run(int direction) {
@@ -57,6 +59,10 @@ public abstract class Critter {
 	 * an InvalidCritterException must be thrown
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
+		Critter c = new Craig();
+		c.x_coord = 10;
+		c.y_coord = 4;
+		population.add(c);
 	}
 	
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
@@ -113,6 +119,11 @@ public abstract class Critter {
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
 		
 	public static void worldTimeStep() {
+		Iterator<Critter> iterator = population.iterator();
+		while(iterator.hasNext()) {
+			iterator.next().doTimeStep();
+		}
+		displayWorld();
 	}
 	
 	public static void displayWorld() {
@@ -138,6 +149,11 @@ public abstract class Critter {
 					world[i][j] = ' ';
 				}
 			}
+		}
+		Iterator<Critter> iterator = population.iterator();
+		while(iterator.hasNext()) {
+			Critter c = iterator.next();
+			world[c.x_coord+1][c.y_coord+1] = c.toString().charAt(0);
 		}
 		for (int i = 0; i < (Params.world_width+2); i++){
 			System.out.println();
