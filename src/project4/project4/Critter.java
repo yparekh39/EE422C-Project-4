@@ -71,6 +71,7 @@ public abstract class Critter {
 				this.y_coord = (y_coord+1) % Params.world_height;
 				break;
 		}
+		this.energy -= Params.walk_energy_cost;
 	}
 	
 	protected final void run(int direction) {
