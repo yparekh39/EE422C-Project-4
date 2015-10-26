@@ -12,9 +12,9 @@
  */
 package project4;
 
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 /* see the PDF for descriptions of the methods and fields in this class
  * you may add fields, methods or inner classes to Critter ONLY if you make your additions private
@@ -161,50 +161,121 @@ public abstract class Critter {
 		displayWorld();
 		
 
-		/*Resolve Encounters*/
-		/*NEED TO WRAP IN WHILE LOOP TO GO TIL NO RUNAWAYS*/
-		/*NEED TO WRITE CODE TO CATCH RUNAWAYS*/
-		List<Critter> runaways = new java.util.ArrayList<Critter>();
+		/*Resolve Encounters and runaways*/
+		ArrayDeque<Critter> runaways = new java.util.ArrayDeque<Critter>();
 		for(int a = 0; a < population.size()-1; a++){
 			Critter firstOccupier = population.get(a);
 			for(int b = a+1; b < population.size(); b++){
 				Critter secondOccupier = population.get(b);
-				//FIND ENCOUNTER BLOCK
+				//ENCOUNTER HANDLING (FIRST PASS)
 				if(firstOccupier.x_coord == secondOccupier.x_coord && firstOccupier.y_coord == secondOccupier.y_coord){
+					//firstOccupier still here and wants to fight?
+					int runawayCheckX = firstOccupier.x_coord; int runawayCheckY = firstOccupier.y_coord;
 					boolean firstWantFight = firstOccupier.fight(secondOccupier.toString());
+					boolean firstStillHere = runawayCheckX == firstOccupier.x_coord && runawayCheckY == firstOccupier.y_coord;
+					//secondOccupier still here and wants to fight?
+					runawayCheckX = secondOccupier.x_coord; runawayCheckY = firstOccupier.y_coord;
 					boolean secondWantFight = secondOccupier.fight(firstOccupier.toString());
-					boolean bothAlive = firstOccupier.energy >= 0 && secondOccupier.energy >= 0;
-					boolean bothStillHere = firstOccupier.x_coord == secondOccupier.x_coord && firstOccupier.y_coord == secondOccupier.y_coord;
-					//FIGHT BLOCK
-					if(bothAlive && bothStillHere){
+					boolean secondStillHere = runawayCheckX == secondOccupier.x_coord && runawayCheckY == secondOccupier.y_coord;
+					//both occupiers still alive?
+					boolean bothAlive = firstOccupier.energy > 0 && secondOccupier.energy > 0;
+					
+					//FIGHT HANDLING
+					if(bothAlive && firstStillHere && secondStillHere){
 						Critter winner, loser;
-						Random rand = new Random();
 						//roll (critters that don't want to fight will always roll 0)
-						int firstRoll = (firstWantFight ? 1:0) * rand.nextInt(firstOccupier.energy);
-						int secondRoll = (secondWantFight ? 1:0) * rand.nextInt(firstOccupier.energy);
+						int firstRoll = (firstWantFight ? 1:0) * firstOccupier.getRandomInt(firstOccupier.energy+1);
+						int secondRoll = (secondWantFight ? 1:0) * secondOccupier.getRandomInt(secondOccupier.energy+1);
 						//establish winner and loser
 						if(firstRoll == secondRoll){
-							winner = rand.nextInt(1) == 1 ? firstOccupier:secondOccupier;
+							winner = firstOccupier.getRandomInt(2) == 1 ? firstOccupier:secondOccupier;//coin toss
 							loser = winner == firstOccupier ? secondOccupier:firstOccupier;
 						}	
 						else{
 							winner = firstRoll > secondRoll ? firstOccupier:secondOccupier;
 							loser = winner == firstOccupier ? secondOccupier:firstOccupier;
 						}
-						winner.energy = loser.energy/2;
+						winner.energy += (loser.energy/2);
 						
 						/*REMOVE LOSER DOES THIS WORK I THINK IT DOES BECAUSE IT REFERS TO THE ORIGINAL OBJECT*/
 						population.remove(loser);
 						if(loser == firstOccupier)
 							a-=1;//reexamines the current position on next outer iteration because list of critters will have shifted to replace this critter
+					}//END FIGHT HANDLING
 					
-					
-					
+					//ADD RUNNERS TO RUNAWAY LIST
+					else{
+						if(!firstStillHere)
+							runaways.add(firstOccupier);
+						if(!secondStillHere)
+							runaways.add(secondOccupier);
 					}
-				}
-			}
-		}
-	}
+					
+						
+				}//END ENCOUNTER HANDLING (FIRST PASS)
+			}//end for loop b
+		}//end for loop a
+				
+			//RUNAWAY HANDLING
+			while(runaways.size() > 0){
+				Critter firstOccupier = runaways.removeFirst();
+				
+				for(int b = 0; b < population.size(); b++){
+					Critter secondOccupier = population.get(b);
+					
+					//ENCOUNTER HANDLING (RUNAWAYS)
+					if(firstOccupier.x_coord == secondOccupier.x_coord && firstOccupier.y_coord == secondOccupier.y_coord){
+						//firstOccupier still here and wants to fight?
+						int runawayCheckX = firstOccupier.x_coord; int runawayCheckY = firstOccupier.y_coord;
+						boolean firstWantFight = firstOccupier.fight(secondOccupier.toString());
+						boolean firstStillHere = runawayCheckX == firstOccupier.x_coord && runawayCheckY == firstOccupier.y_coord;
+						//secondOccupier still here and wants to fight?
+						runawayCheckX = secondOccupier.x_coord; runawayCheckY = firstOccupier.y_coord;
+						boolean secondWantFight = secondOccupier.fight(firstOccupier.toString());
+						boolean secondStillHere = runawayCheckX == secondOccupier.x_coord && runawayCheckY == secondOccupier.y_coord;
+						//both occupiers still alive?
+						boolean bothAlive = firstOccupier.energy > 0 && secondOccupier.energy > 0;
+						
+						//FIGHT HANDLING
+						if(bothAlive && firstStillHere && secondStillHere){
+							Critter winner, loser;
+							//roll (critters that don't want to fight will always roll 0)
+							int firstRoll = (firstWantFight ? 1:0) * firstOccupier.getRandomInt(firstOccupier.energy+1);
+							int secondRoll = (secondWantFight ? 1:0) * secondOccupier.getRandomInt(secondOccupier.energy+1);
+							//establish winner and loser
+							if(firstRoll == secondRoll){
+								winner = firstOccupier.getRandomInt(2) == 1 ? firstOccupier:secondOccupier;//coin toss
+								loser = winner == firstOccupier ? secondOccupier:firstOccupier;
+							}	
+							else{
+								winner = firstRoll > secondRoll ? firstOccupier:secondOccupier;
+								loser = winner == firstOccupier ? secondOccupier:firstOccupier;
+							}
+							winner.energy += (loser.energy/2);
+							
+							/*REMOVE LOSER DOES THIS WORK I THINK IT DOES BECAUSE IT REFERS TO THE ORIGINAL OBJECT*/
+							population.remove(loser);
+						}//END FIGHT HANDLING
+						
+						//ADD RUNNERS TO RUNAWAY LIST
+						else{
+							if(!firstStillHere)
+								runaways.add(firstOccupier);
+							if(!secondStillHere)
+								runaways.add(secondOccupier);
+						}
+						
+							
+					}//END ENCOUNTER HANDLING (RUNAWAYS)
+				}//end for loop b
+			}//end runaway while loop
+			
+			
+			
+			
+			
+		}//end of worldTimeStep
+
 	
 	public static void displayWorld() {
 		char[][] world = new char[Params.world_width+2][Params.world_height+2];
