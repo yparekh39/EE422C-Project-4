@@ -47,6 +47,8 @@ public abstract class Critter {
 	
 	
 	protected final void walk(int direction) {
+		if(hasMoved)
+			return;
 		switch (direction) {
 			case 0:
 				this.x_coord = (x_coord+1) % Params.world_width;
@@ -82,6 +84,8 @@ public abstract class Critter {
 	}
 	
 	protected final void run(int direction) {
+		if(hasMoved)
+			return;
 		walk(direction);
 		walk(direction);
 		this.energy += (2*Params.walk_energy_cost);
@@ -235,20 +239,46 @@ public abstract class Critter {
 			Critter firstOccupier = population.get(a);
 			for(int b = a+1; b < population.size(); b++){
 				Critter secondOccupier = population.get(b);
-				//ENCOUNTER HANDLING (FIRST PASS)
+				//ENCOUNTER HANDLING
 				if(firstOccupier.x_coord == secondOccupier.x_coord && firstOccupier.y_coord == secondOccupier.y_coord){
+					
 					//firstOccupier still here and wants to fight?
-					int runawayCheckX = firstOccupier.x_coord; int runawayCheckY = firstOccupier.y_coord;			
+					int oldX = firstOccupier.x_coord; int oldY = firstOccupier.y_coord;			
 					boolean firstWantFight = firstOccupier.fight(secondOccupier.toString());					
-					boolean firstStillHere = runawayCheckX == firstOccupier.x_coord && runawayCheckY == firstOccupier.y_coord;
+					boolean firstStillHere = (oldX == firstOccupier.x_coord) && (oldY == firstOccupier.y_coord);
+					
+					//firstOccupier ran away and maybe moved into someone else's spot (move him/her back to old position)
+					if(!firstStillHere){
+						for(Critter current : population){
+							if(firstOccupier.x_coord == current.x_coord && firstOccupier.y_coord == current.y_coord && firstOccupier != current){
+								firstOccupier.x_coord = oldX;
+								firstOccupier.y_coord = oldY;
+								firstStillHere = true;
+							}
+						}
+					}
+						
 					//secondOccupier still here and wants to fight?
-					runawayCheckX = secondOccupier.x_coord; runawayCheckY = firstOccupier.y_coord;
+					oldX = secondOccupier.x_coord; oldY = firstOccupier.y_coord;
 					boolean secondWantFight = secondOccupier.fight(firstOccupier.toString());
-					boolean secondStillHere = runawayCheckX == secondOccupier.x_coord && runawayCheckY == secondOccupier.y_coord;
-					//both occupiers still alive?
+					boolean secondStillHere = (oldX == secondOccupier.x_coord) && (oldY == secondOccupier.y_coord);
+					
+					//secondOccupier ran away and maybe moved into someone else's spot (move him/her back to old position)
+					if(!secondStillHere){
+						for(Critter current: population){
+							if(secondOccupier.x_coord == current.x_coord && secondOccupier.y_coord == current.y_coord && secondOccupier != current){
+								secondOccupier.x_coord = oldX;
+								secondOccupier.y_coord = oldY;
+								secondStillHere = true;
+							}
+						}
+					}
+					
+					//both occupiers still alive after all that jazz?
 					boolean bothAlive = firstOccupier.energy > 0 && secondOccupier.energy > 0;
 					
 					//FIGHT HANDLING
+					//both critters still here and want to fight
 					if(bothAlive && firstStillHere && secondStillHere){
 						Critter winner, loser;
 						//roll (critters that don't want to fight will always roll 0)
@@ -269,17 +299,11 @@ public abstract class Critter {
 						population.remove(loser);
 						if(loser == firstOccupier)
 							a-=1;//reexamines the current position on next outer iteration because list of critters will have shifted to replace this critter
-					}//END FIGHT HANDLING
-					
-					
-					
-						
-				}//END ENCOUNTER HANDLING (FIRST PASS)
+					}//END FIGHT HANDLING		
+				}//END ENCOUNTER HANDLING
 			}//end for loop b
 		}//end for loop a
 
-		
-	
 		/*DEDUCT REST ENERGY*/
 		for(Critter current: population)
 			current.energy -= Params.rest_energy_cost;
