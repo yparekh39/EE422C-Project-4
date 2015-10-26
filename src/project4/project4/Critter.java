@@ -12,6 +12,8 @@
  */
 package project4;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -83,6 +85,42 @@ public abstract class Critter {
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
+		if (this.energy < Params.min_reproduce_energy) {
+			return;
+		}
+		offspring.energy = (this.energy/2);
+		this.energy /= 2;
+		switch (direction) {
+			case 0:
+				offspring.x_coord = (x_coord+1) % Params.world_width;
+				break;
+			case 1:
+				offspring.x_coord = (x_coord+1) % Params.world_width;
+				offspring.y_coord = (y_coord-1) % Params.world_height;
+				break;
+			case 2:
+				offspring.y_coord = (y_coord-1) % Params.world_height;
+				break;
+			case 3:
+				offspring.y_coord = (y_coord-1) % Params.world_height;
+				offspring.x_coord = (x_coord-1) % Params.world_width;
+				break;
+			case 4:
+				offspring.x_coord = (x_coord-1) % Params.world_width;
+				break;
+			case 5:
+				offspring.x_coord = (x_coord-1) % Params.world_width;
+				offspring.y_coord = (y_coord+1) % Params.world_height;
+				break;
+			case 6:
+				offspring.y_coord = (y_coord+1) % Params.world_height;
+				break;
+			case 7:
+				offspring.x_coord = (x_coord+1) % Params.world_width;
+				offspring.y_coord = (y_coord+1) % Params.world_height;
+				break;
+		}
+		babies.add(offspring);
 	}
 
 	public abstract void doTimeStep();
@@ -93,10 +131,31 @@ public abstract class Critter {
 	 * an InvalidCritterException must be thrown
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
-		Critter c = new Craig();
-		c.x_coord = 10;
-		c.y_coord = 4;
-		population.add(c);
+		Class<?> critterClass;
+		Object newCritter;
+		Constructor<?> constructor;
+		try {
+			critterClass = Class.forName(critter_class_name);
+		} catch (ClassNotFoundException e) {
+			throw new InvalidCritterException(critter_class_name);
+		}
+		try {
+			constructor = critterClass.getConstructor();
+		} catch (NoSuchMethodException | SecurityException e1) {
+			// TODO Auto-generated catch block
+			throw new InvalidCritterException(critter_class_name);
+		}
+		try {
+			newCritter = constructor.newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			throw new InvalidCritterException(critter_class_name);
+		}
+		if (!(newCritter instanceof Critter)) {
+			throw new InvalidCritterException(critter_class_name);
+		}
+		
 	}
 	
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
