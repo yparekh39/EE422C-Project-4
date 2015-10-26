@@ -14,6 +14,7 @@ package project4;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 /* see the PDF for descriptions of the methods and fields in this class
  * you may add fields, methods or inner classes to Critter ONLY if you make your additions private
@@ -152,11 +153,57 @@ public abstract class Critter {
 	private static List<Critter> babies = new java.util.ArrayList<Critter>();
 		
 	public static void worldTimeStep() {
+		/*call doTimeStep for each critter*/
 		Iterator<Critter> iterator = population.iterator();
 		while(iterator.hasNext()) {
 			iterator.next().doTimeStep();
 		}
 		displayWorld();
+		
+
+		/*Resolve Encounters*/
+		/*NEED TO WRAP IN WHILE LOOP TO GO TIL NO RUNAWAYS*/
+		/*NEED TO WRITE CODE TO CATCH RUNAWAYS*/
+		List<Critter> runaways = new java.util.ArrayList<Critter>();
+		for(int a = 0; a < population.size()-1; a++){
+			Critter firstOccupier = population.get(a);
+			for(int b = a+1; b < population.size(); b++){
+				Critter secondOccupier = population.get(b);
+				//FIND ENCOUNTER BLOCK
+				if(firstOccupier.x_coord == secondOccupier.x_coord && firstOccupier.y_coord == secondOccupier.y_coord){
+					boolean firstWantFight = firstOccupier.fight(secondOccupier.toString());
+					boolean secondWantFight = secondOccupier.fight(firstOccupier.toString());
+					boolean bothAlive = firstOccupier.energy >= 0 && secondOccupier.energy >= 0;
+					boolean bothStillHere = firstOccupier.x_coord == secondOccupier.x_coord && firstOccupier.y_coord == secondOccupier.y_coord;
+					//FIGHT BLOCK
+					if(bothAlive && bothStillHere){
+						Critter winner, loser;
+						Random rand = new Random();
+						//roll (critters that don't want to fight will always roll 0)
+						int firstRoll = (firstWantFight ? 1:0) * rand.nextInt(firstOccupier.energy);
+						int secondRoll = (secondWantFight ? 1:0) * rand.nextInt(firstOccupier.energy);
+						//establish winner and loser
+						if(firstRoll == secondRoll){
+							winner = rand.nextInt(1) == 1 ? firstOccupier:secondOccupier;
+							loser = winner == firstOccupier ? secondOccupier:firstOccupier;
+						}	
+						else{
+							winner = firstRoll > secondRoll ? firstOccupier:secondOccupier;
+							loser = winner == firstOccupier ? secondOccupier:firstOccupier;
+						}
+						winner.energy = loser.energy/2;
+						
+						/*REMOVE LOSER DOES THIS WORK I THINK IT DOES BECAUSE IT REFERS TO THE ORIGINAL OBJECT*/
+						population.remove(loser);
+						if(loser == firstOccupier)
+							a-=1;//reexamines the current position on next outer iteration because list of critters will have shifted to replace this critter
+					
+					
+					
+					}
+				}
+			}
+		}
 	}
 	
 	public static void displayWorld() {
