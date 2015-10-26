@@ -303,11 +303,11 @@ public abstract class Critter {
 						if(bothAlive && firstStillHere && secondStillHere){
 							Critter winner, loser;
 							//roll (critters that don't want to fight will always roll 0)
-							int firstRoll = (firstWantFight ? 1:0) * firstOccupier.getRandomInt(firstOccupier.energy+1);
-							int secondRoll = (secondWantFight ? 1:0) * secondOccupier.getRandomInt(secondOccupier.energy+1);
+							int firstRoll = (firstWantFight ? 1:0) * getRandomInt(firstOccupier.energy+1);
+							int secondRoll = (secondWantFight ? 1:0) * getRandomInt(secondOccupier.energy+1);
 							//establish winner and loser
 							if(firstRoll == secondRoll){
-								winner = firstOccupier.getRandomInt(2) == 1 ? firstOccupier:secondOccupier;//coin toss
+								winner = getRandomInt(2) == 1 ? firstOccupier:secondOccupier;//coin toss
 								loser = winner == firstOccupier ? secondOccupier:firstOccupier;
 							}	
 							else{
@@ -333,11 +333,22 @@ public abstract class Critter {
 				}//end for loop b
 			}//end runaway while loop
 			
+		/*ClEANING DEAD CRITTERS*/
+		int i = 0;
+		while(i < population.size()){
+			if(population.get(i).energy <= 0)
+				population.remove(i);
+			else
+				i++;
+		}
+		
+		/*ADDING BABIES*/
+		population.addAll(babies);
 			
 			
 			
 			
-		}//end of worldTimeStep
+	}//end of worldTimeStep
 
 	
 	public static void displayWorld() {
