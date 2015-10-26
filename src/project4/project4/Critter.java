@@ -329,11 +329,22 @@ public abstract class Critter {
 				}//end for loop b
 			}//end runaway while loop
 			
+		/*ClEANING DEAD CRITTERS*/
+		int i = 0;
+		while(i < population.size()){
+			if(population.get(i).energy <= 0)
+				population.remove(i);
+			else
+				i++;
+		}
+		
+		/*ADDING BABIES*/
+		population.addAll(babies);
 			
 			
 			
 			
-		}//end of worldTimeStep
+	}//end of worldTimeStep
 
 	
 	public static void displayWorld() {
