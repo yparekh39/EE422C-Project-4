@@ -1,9 +1,9 @@
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by
  * Replace <...> with your actual data.
- * <Student1 Name>
- * <Student1 EID>
- * <Student1 5-digit Unique No.>
+ * Matt Owens
+ * mo8755
+ * 16340
  * <Student2 Name>
  * <Student2 EID>
  * <Student2 5-digit Unique No.>
@@ -318,7 +318,8 @@ public abstract class Critter {
 			Algae algaeToAdd = new Algae();
 			algaeToAdd.setEnergy(Params.start_energy);
 			algaeToAdd.setXCoord(rand.nextInt(Params.world_width));
-			
+			algaeToAdd.setYCoord(rand.nextInt(Params.world_height));
+		}
 		
 		/*ADDING BABIES*/
 		population.addAll(babies);
@@ -332,8 +333,7 @@ public abstract class Critter {
 				i++;
 		}
 		
-		algaeToAdd.setYCoord(rand.nextInt(Params.world_height));
-		}
+
 		
 		
 		/*RESET MOVE FLAG*/
