@@ -325,9 +325,19 @@ public abstract class Critter {
 				i++;
 		}
 		
+		/*ADD ALGAE*/
+		for(int algaeCount = 0; algaeCount < Params.refresh_algae_count; algaeCount++){
+			Algae algaeToAdd = new Algae();
+			algaeToAdd.setEnergy(Params.start_energy);
+			algaeToAdd.setXCoord(rand.nextInt(Params.world_width));
+			algaeToAdd.setYCoord(rand.nextInt(Params.world_height));
+		}
+		
+		
 		/*RESET MOVE FLAG*/
 		for(Critter current: population)
 			current.hasMoved = false;
+		
 			
 			
 			
