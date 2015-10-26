@@ -132,7 +132,7 @@ public abstract class Critter {
 	 */
 	public static void makeCritter(String critter_class_name) throws InvalidCritterException {
 		Class<?> critterClass;
-		Object newCritter;
+		Object object;
 		Constructor<?> constructor;
 		try {
 			critterClass = Class.forName(critter_class_name);
@@ -146,16 +146,20 @@ public abstract class Critter {
 			throw new InvalidCritterException(critter_class_name);
 		}
 		try {
-			newCritter = constructor.newInstance();
+			object = constructor.newInstance();
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			throw new InvalidCritterException(critter_class_name);
 		}
-		if (!(newCritter instanceof Critter)) {
+		if (!(object instanceof Critter)) {
 			throw new InvalidCritterException(critter_class_name);
 		}
-		
+		Critter newCritter = (Critter) object;
+		newCritter.energy = Params.start_energy;
+		newCritter.x_coord = rand.nextInt(Params.world_width);
+		newCritter.y_coord = rand.nextInt(Params.world_height);
+		population.add(newCritter);
 	}
 	
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
