@@ -47,8 +47,11 @@ public abstract class Critter {
 	
 	
 	protected final void walk(int direction) {
+		this.energy -= Params.walk_energy_cost;
+		
 		if(hasMoved)
 			return;
+			
 		switch (direction) {
 			case 0:
 				this.x_coord = (x_coord+1) % Params.world_width;
@@ -79,13 +82,15 @@ public abstract class Critter {
 				this.y_coord = (y_coord+1) % Params.world_height;
 				break;
 		}
-		this.energy -= Params.walk_energy_cost;
 		hasMoved = true;
 	}
 	
 	protected final void run(int direction) {
-		if(hasMoved)
+		if(hasMoved){
+			this.energy -= Params.run_energy_cost;
 			return;
+		}
+			
 		walk(direction);
 		walk(direction);
 		this.energy += (2*Params.walk_energy_cost);
