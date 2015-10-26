@@ -299,11 +299,11 @@ public abstract class Critter {
 						if(bothAlive && firstStillHere && secondStillHere){
 							Critter winner, loser;
 							//roll (critters that don't want to fight will always roll 0)
-							int firstRoll = (firstWantFight ? 1:0) * firstOccupier.getRandomInt(firstOccupier.energy+1);
-							int secondRoll = (secondWantFight ? 1:0) * secondOccupier.getRandomInt(secondOccupier.energy+1);
+							int firstRoll = (firstWantFight ? 1:0) * getRandomInt(firstOccupier.energy+1);
+							int secondRoll = (secondWantFight ? 1:0) * getRandomInt(secondOccupier.energy+1);
 							//establish winner and loser
 							if(firstRoll == secondRoll){
-								winner = firstOccupier.getRandomInt(2) == 1 ? firstOccupier:secondOccupier;//coin toss
+								winner = getRandomInt(2) == 1 ? firstOccupier:secondOccupier;//coin toss
 								loser = winner == firstOccupier ? secondOccupier:firstOccupier;
 							}	
 							else{
