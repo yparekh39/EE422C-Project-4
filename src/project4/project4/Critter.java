@@ -59,19 +59,34 @@ public abstract class Critter {
 			case 1:
 				this.x_coord = (x_coord+1) % Params.world_width;
 				this.y_coord = (y_coord-1) % Params.world_height;
+				if(y_coord<0)
+					y_coord += Params.world_width;
 				break;
 			case 2:
 				this.y_coord = (y_coord-1) % Params.world_height;
+				if(y_coord<0)
+					y_coord += Params.world_width;
 				break;
 			case 3:
 				this.y_coord = (y_coord-1) % Params.world_height;
+				if(y_coord<0)
+					y_coord += Params.world_width;
 				this.x_coord = (x_coord-1) % Params.world_width;
+				//wrap
+				if(x_coord<0)
+					x_coord += Params.world_width;
 				break;
 			case 4:
 				this.x_coord = (x_coord-1) % Params.world_width;
+				//wrap
+				if(x_coord<0)
+					x_coord += Params.world_width;
 				break;
 			case 5:
 				this.x_coord = (x_coord-1) % Params.world_width;
+				//wrap
+				if(x_coord<0)
+					x_coord += Params.world_width;
 				this.y_coord = (y_coord+1) % Params.world_height;
 				break;
 			case 6:
@@ -92,6 +107,7 @@ public abstract class Critter {
 		}
 			
 		walk(direction);
+		hasMoved = false;
 		walk(direction);
 		this.energy += (2*Params.walk_energy_cost);
 		this.energy -= Params.run_energy_cost;
