@@ -33,7 +33,7 @@ public class Spider extends Critter {
 			movedLastStep = false;
 		
 		//reproduce every 4 steps
-		if(age >= 20 && age % 8 == 0){
+		if(age % 20 == 0){
 			Critter offspring = new Spider();
 			this.reproduce(offspring, 0);
 		}
