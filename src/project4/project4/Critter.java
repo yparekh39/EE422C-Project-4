@@ -1,9 +1,9 @@
 /* CRITTERS Critter.java
  * EE422C Project 4 submission by
  * Replace <...> with your actual data.
- * <Student1 Name>
- * <Student1 EID>
- * <Student1 5-digit Unique No.>
+ * Matt Owens
+ * mo8755
+ * 16340
  * <Student2 Name>
  * <Student2 EID>
  * <Student2 5-digit Unique No.>
@@ -24,6 +24,8 @@ import java.util.List;
  */
 public abstract class Critter {
 	
+	private boolean hasMoved;
+	
 	private static java.util.Random rand = new java.util.Random();
 	public static int getRandomInt(int max) {
 		return rand.nextInt(max);
@@ -43,7 +45,13 @@ public abstract class Critter {
 	private int x_coord;
 	private int y_coord;
 	
+	
 	protected final void walk(int direction) {
+		this.energy -= Params.walk_energy_cost;
+		
+		if(hasMoved)
+			return;
+			
 		switch (direction) {
 			case 0:
 				this.x_coord = (x_coord+1) % Params.world_width;
@@ -51,19 +59,34 @@ public abstract class Critter {
 			case 1:
 				this.x_coord = (x_coord+1) % Params.world_width;
 				this.y_coord = (y_coord-1) % Params.world_height;
+				if(y_coord<0)
+					y_coord += Params.world_width;
 				break;
 			case 2:
 				this.y_coord = (y_coord-1) % Params.world_height;
+				if(y_coord<0)
+					y_coord += Params.world_width;
 				break;
 			case 3:
 				this.y_coord = (y_coord-1) % Params.world_height;
+				if(y_coord<0)
+					y_coord += Params.world_width;
 				this.x_coord = (x_coord-1) % Params.world_width;
+				//wrap
+				if(x_coord<0)
+					x_coord += Params.world_width;
 				break;
 			case 4:
 				this.x_coord = (x_coord-1) % Params.world_width;
+				//wrap
+				if(x_coord<0)
+					x_coord += Params.world_width;
 				break;
 			case 5:
 				this.x_coord = (x_coord-1) % Params.world_width;
+				//wrap
+				if(x_coord<0)
+					x_coord += Params.world_width;
 				this.y_coord = (y_coord+1) % Params.world_height;
 				break;
 			case 6:
@@ -74,14 +97,21 @@ public abstract class Critter {
 				this.y_coord = (y_coord+1) % Params.world_height;
 				break;
 		}
-		this.energy -= Params.walk_energy_cost;
+		hasMoved = true;
 	}
 	
 	protected final void run(int direction) {
+		if(hasMoved){
+			this.energy -= Params.run_energy_cost;
+			return;
+		}
+			
 		walk(direction);
+		hasMoved = false;
 		walk(direction);
 		this.energy += (2*Params.walk_energy_cost);
 		this.energy -= Params.run_energy_cost;
+		hasMoved = true;
 	}
 	
 	protected final void reproduce(Critter offspring, int direction) {
@@ -238,20 +268,46 @@ public abstract class Critter {
 			Critter firstOccupier = population.get(a);
 			for(int b = a+1; b < population.size(); b++){
 				Critter secondOccupier = population.get(b);
-				//ENCOUNTER HANDLING (FIRST PASS)
+				//ENCOUNTER HANDLING
 				if(firstOccupier.x_coord == secondOccupier.x_coord && firstOccupier.y_coord == secondOccupier.y_coord){
+					
 					//firstOccupier still here and wants to fight?
-					int runawayCheckX = firstOccupier.x_coord; int runawayCheckY = firstOccupier.y_coord;
-					boolean firstWantFight = firstOccupier.fight(secondOccupier.toString());
-					boolean firstStillHere = runawayCheckX == firstOccupier.x_coord && runawayCheckY == firstOccupier.y_coord;
+					int oldX = firstOccupier.x_coord; int oldY = firstOccupier.y_coord;			
+					boolean firstWantFight = firstOccupier.fight(secondOccupier.toString());					
+					boolean firstStillHere = (oldX == firstOccupier.x_coord) && (oldY == firstOccupier.y_coord);
+					
+					//firstOccupier ran away and maybe moved into someone else's spot (move him/her back to old position)
+					if(!firstStillHere){
+						for(Critter current : population){
+							if(firstOccupier.x_coord == current.x_coord && firstOccupier.y_coord == current.y_coord && firstOccupier != current){
+								firstOccupier.x_coord = oldX;
+								firstOccupier.y_coord = oldY;
+								firstStillHere = true;
+							}
+						}
+					}
+						
 					//secondOccupier still here and wants to fight?
-					runawayCheckX = secondOccupier.x_coord; runawayCheckY = firstOccupier.y_coord;
+					oldX = secondOccupier.x_coord; oldY = firstOccupier.y_coord;
 					boolean secondWantFight = secondOccupier.fight(firstOccupier.toString());
-					boolean secondStillHere = runawayCheckX == secondOccupier.x_coord && runawayCheckY == secondOccupier.y_coord;
-					//both occupiers still alive?
+					boolean secondStillHere = (oldX == secondOccupier.x_coord) && (oldY == secondOccupier.y_coord);
+					
+					//secondOccupier ran away and maybe moved into someone else's spot (move him/her back to old position)
+					if(!secondStillHere){
+						for(Critter current: population){
+							if(secondOccupier.x_coord == current.x_coord && secondOccupier.y_coord == current.y_coord && secondOccupier != current){
+								secondOccupier.x_coord = oldX;
+								secondOccupier.y_coord = oldY;
+								secondStillHere = true;
+							}
+						}
+					}
+					
+					//both occupiers still alive after all that jazz?
 					boolean bothAlive = firstOccupier.energy > 0 && secondOccupier.energy > 0;
 					
 					//FIGHT HANDLING
+					//both critters still here and want to fight
 					if(bothAlive && firstStillHere && secondStillHere){
 						Critter winner, loser;
 						//roll (critters that don't want to fight will always roll 0)
@@ -272,75 +328,26 @@ public abstract class Critter {
 						population.remove(loser);
 						if(loser == firstOccupier)
 							a-=1;//reexamines the current position on next outer iteration because list of critters will have shifted to replace this critter
-					}//END FIGHT HANDLING
-					
-					//ADD RUNNERS TO RUNAWAY LIST
-					else{
-						if(!firstStillHere)
-							runaways.add(firstOccupier);
-						if(!secondStillHere)
-							runaways.add(secondOccupier);
-					}
-					
-						
-				}//END ENCOUNTER HANDLING (FIRST PASS)
+					}//END FIGHT HANDLING		
+				}//END ENCOUNTER HANDLING
 			}//end for loop b
 		}//end for loop a
-				
-			//RUNAWAY HANDLING
-			while(runaways.size() > 0){
-				Critter firstOccupier = runaways.removeFirst();
-				
-				for(int b = 0; b < population.size(); b++){
-					Critter secondOccupier = population.get(b);
-					
-					//ENCOUNTER HANDLING (RUNAWAYS)
-					if(firstOccupier.x_coord == secondOccupier.x_coord && firstOccupier.y_coord == secondOccupier.y_coord){
-						//firstOccupier still here and wants to fight?
-						int runawayCheckX = firstOccupier.x_coord; int runawayCheckY = firstOccupier.y_coord;
-						boolean firstWantFight = firstOccupier.fight(secondOccupier.toString());
-						boolean firstStillHere = runawayCheckX == firstOccupier.x_coord && runawayCheckY == firstOccupier.y_coord;
-						//secondOccupier still here and wants to fight?
-						runawayCheckX = secondOccupier.x_coord; runawayCheckY = firstOccupier.y_coord;
-						boolean secondWantFight = secondOccupier.fight(firstOccupier.toString());
-						boolean secondStillHere = runawayCheckX == secondOccupier.x_coord && runawayCheckY == secondOccupier.y_coord;
-						//both occupiers still alive?
-						boolean bothAlive = firstOccupier.energy > 0 && secondOccupier.energy > 0;
-						
-						//FIGHT HANDLING
-						if(bothAlive && firstStillHere && secondStillHere){
-							Critter winner, loser;
-							//roll (critters that don't want to fight will always roll 0)
-							int firstRoll = (firstWantFight ? 1:0) * getRandomInt(firstOccupier.energy+1);
-							int secondRoll = (secondWantFight ? 1:0) * getRandomInt(secondOccupier.energy+1);
-							//establish winner and loser
-							if(firstRoll == secondRoll){
-								winner = getRandomInt(2) == 1 ? firstOccupier:secondOccupier;//coin toss
-								loser = winner == firstOccupier ? secondOccupier:firstOccupier;
-							}	
-							else{
-								winner = firstRoll > secondRoll ? firstOccupier:secondOccupier;
-								loser = winner == firstOccupier ? secondOccupier:firstOccupier;
-							}
-							winner.energy += (loser.energy/2);
-							
-							/*REMOVE LOSER DOES THIS WORK I THINK IT DOES BECAUSE IT REFERS TO THE ORIGINAL OBJECT*/
-							population.remove(loser);
-						}//END FIGHT HANDLING
-						
-						//ADD RUNNERS TO RUNAWAY LIST
-						else{
-							if(!firstStillHere)
-								runaways.add(firstOccupier);
-							if(!secondStillHere)
-								runaways.add(secondOccupier);
-						}
-						
-							
-					}//END ENCOUNTER HANDLING (RUNAWAYS)
-				}//end for loop b
-			}//end runaway while loop
-			
+
+		/*DEDUCT REST ENERGY*/
+		for(Critter current: population)
+			current.energy -= Params.rest_energy_cost;
+		
+		/*ADD ALGAE*/
+		for(int algaeCount = 0; algaeCount < Params.refresh_algae_count; algaeCount++){
+			Algae algaeToAdd = new Algae();
+			algaeToAdd.setEnergy(Params.start_energy);
+			algaeToAdd.setXCoord(rand.nextInt(Params.world_width));
+			algaeToAdd.setYCoord(rand.nextInt(Params.world_height));
+		}
+		
+		/*ADDING BABIES*/
+		population.addAll(babies);
+		
 		/*ClEANING DEAD CRITTERS*/
 		int i = 0;
 		while(i < population.size()){
@@ -350,8 +357,13 @@ public abstract class Critter {
 				i++;
 		}
 		
-		/*ADDING BABIES*/
-		population.addAll(babies);
+
+		
+		
+		/*RESET MOVE FLAG*/
+		for(Critter current: population)
+			current.hasMoved = false;
+		
 			
 			
 			
