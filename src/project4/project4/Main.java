@@ -38,7 +38,12 @@ public class Main {
 			else if (splitInput[0].equals("step")) { 
 				int stepCount = 1;
 				if (splitInput.length == 2) {
-					stepCount = Integer.parseInt(splitInput[1]);
+					try {
+						stepCount = Integer.parseInt(splitInput[1]);
+					} catch(NumberFormatException e) {
+						System.out.println("error processing: " + input);
+						continue;
+					}
 				}
 				else if (splitInput.length > 2) {
 					System.out.println("error processing: " + input);
@@ -55,7 +60,12 @@ public class Main {
 					System.out.println("error processing: " + input); 
 					continue;
 				} 
-				Critter.setSeed(Long.parseLong(splitInput[splitInput.length-1]));
+				try {
+					Critter.setSeed(Long.parseLong(splitInput[splitInput.length-1]));
+				} catch(NumberFormatException e) {
+					System.out.println("error processing: " + input);
+					continue;
+				}
 			}
 			else if (splitInput[0].equals("make")) {
 				//System.out.println(Arrays.toString(splitInput));
