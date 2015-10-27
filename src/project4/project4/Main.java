@@ -38,7 +38,7 @@ public class Main {
 			else if (splitInput[0].equals("step")) { 
 				int stepCount = 1;
 				if (splitInput.length == 2) {
-					stepCount = Integer.parseInt(splitInput[2]);
+					stepCount = Integer.parseInt(splitInput[1]);
 				}
 				else if (splitInput.length > 2) {
 					System.out.println("error processing: " + input);
