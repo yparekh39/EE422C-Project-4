@@ -44,7 +44,6 @@ public class Main {
 					System.out.println("error processing: " + input);
 					continue;
 				}
-				System.out.println(stepCount);
 				for (int i = 0; i < stepCount; i++) {
 					Critter.worldTimeStep();
 				}

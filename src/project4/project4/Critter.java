@@ -51,7 +51,6 @@ public abstract class Critter {
 		
 		if(hasMoved)
 			return;
-			
 		switch (direction) {
 			case 0:
 				this.x_coord = (x_coord+1) % Params.world_width;
@@ -60,17 +59,17 @@ public abstract class Critter {
 				this.x_coord = (x_coord+1) % Params.world_width;
 				this.y_coord = (y_coord-1) % Params.world_height;
 				if(y_coord<0)
-					y_coord += Params.world_width;
+					y_coord += Params.world_height;
 				break;
 			case 2:
 				this.y_coord = (y_coord-1) % Params.world_height;
 				if(y_coord<0)
-					y_coord += Params.world_width;
+					y_coord += Params.world_height;
 				break;
 			case 3:
 				this.y_coord = (y_coord-1) % Params.world_height;
 				if(y_coord<0)
-					y_coord += Params.world_width;
+					y_coord += Params.world_height;
 				this.x_coord = (x_coord-1) % Params.world_width;
 				//wrap
 				if(x_coord<0)
