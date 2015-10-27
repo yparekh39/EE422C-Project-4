@@ -352,8 +352,11 @@ public abstract class Critter {
 			population.add(algaeToAdd);
 		}
 		
+		
+		
 		/*ADDING BABIES*/
 		population.addAll(babies);
+		babies.clear();
 		
 		/*ClEANING DEAD CRITTERS*/
 		i = 0;

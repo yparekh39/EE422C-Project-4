@@ -27,12 +27,13 @@ public class Spider extends Critter {
 		//movement pattern is a square
 		if(!movedLastStep){
 			lastDir = (lastDir + 2) %8;
+			walk(lastDir);
 		}
 		else
 			movedLastStep = false;
 		
 		//reproduce every 4 steps
-		if(age % 4 == 0){
+		if(age >= 20 && age % 8 == 0){
 			Critter offspring = new Spider();
 			this.reproduce(offspring, 0);
 		}
