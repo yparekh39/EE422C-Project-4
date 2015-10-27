@@ -28,7 +28,7 @@ public class Female extends Critter {
 		if (Critter.getRandomInt(2) == 0) { child = new Male(); }
 		else { child = new Female(); }
 		
-		if (oponent.equals("M")) {
+		if (oponent.equals("M")) { //Reproduce if you encounter a male
 			reproduce(child, Critter.getRandomInt(8));
 		}
 		return true;

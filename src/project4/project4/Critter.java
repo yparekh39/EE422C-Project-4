@@ -44,7 +44,7 @@ public abstract class Critter {
 	private int x_coord;
 	private int y_coord;
 	
-	
+	//Moves critter one spot in one direction, wraps around properly
 	protected final void walk(int direction) {
 		this.energy -= Params.walk_energy_cost;
 		
@@ -118,6 +118,7 @@ public abstract class Critter {
 		}
 		offspring.energy = (this.energy/2);
 		this.energy /= 2;
+		//Determines what direction to put child (uses % to wrap around)
 		switch (direction) {
 			case 0:
 				offspring.x_coord = (x_coord+1) % Params.world_width;
@@ -204,6 +205,7 @@ public abstract class Critter {
 		population.add(newCritter);
 	}
 	
+	//generates list of critters of concrete subclass critter_class_name
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
 		List<Critter> result = new java.util.ArrayList<Critter>();
 		Class<?> critterClass;
@@ -395,6 +397,7 @@ public abstract class Critter {
 
 	
 	public static void displayWorld() {
+		//Builds outer grid
 		char[][] world = new char[Params.world_width+2][Params.world_height+2];
 		for (int i = 0; i < (Params.world_width+2); i++) {
 			for (int j = 0; j < (Params.world_height+2); j++) {
@@ -418,11 +421,13 @@ public abstract class Critter {
 				}
 			}
 		}
+		//Places critters into world
 		Iterator<Critter> iterator = population.iterator();
 		while(iterator.hasNext()) {
 			Critter c = iterator.next();
 			world[c.x_coord+1][c.y_coord+1] = c.toString().charAt(0);
 		}
+		//Prints world
 		for (int i = 0; i < (Params.world_width+2); i++){
 			for (int j = 0; j < (Params.world_height+2); j++) {
 				System.out.print(world[i][j]);

@@ -28,7 +28,7 @@ public class Male extends Critter {
 	public boolean fight(String oponent) {
 		// TODO Auto-generated method stub
 		if (oponent.equals("F")) {
-			walk(Critter.getRandomInt(8));
+			walk(Critter.getRandomInt(8)); //Try and walk away from a fight with a female
 		}
 		return true;
 	}
