@@ -18,7 +18,6 @@ public class Male extends Critter {
 		// TODO Auto-generated method stub
 		if (oponent.equals("F")) {
 			walk(Critter.getRandomInt(8));
-			return false;
 		}
 		return true;
 	}
