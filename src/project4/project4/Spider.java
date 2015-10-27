@@ -13,7 +13,7 @@ public class Spider extends Critter {
 		ageAppearance = "X";
 	}
 	
-
+	
 	@Override
 	public void doTimeStep() {
 		//if a newborn, offset 2 to the right
@@ -21,7 +21,7 @@ public class Spider extends Critter {
 			run(lastDir);
 
 		//if it moved last step, sit still this step
-		//movement pattern is a square
+		//movement pattern is a square that reminds me of a web (though not a spiral that changes size)
 		if(!movedLastStep){
 			lastDir = (lastDir + 2) %8;
 			walk(lastDir);
@@ -39,6 +39,7 @@ public class Spider extends Critter {
 		age++;
 	}
 
+	//Gotta defend the "web"
 	@Override
 	public boolean fight(String oponent) {
 		return true;

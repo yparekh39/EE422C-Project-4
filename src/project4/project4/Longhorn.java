@@ -3,6 +3,7 @@ package project4;
 public class Longhorn extends Critter {
 	private String identity;
 	private int lastDir;
+	private int age;
 	
 	
 	public Longhorn(){
@@ -10,8 +11,10 @@ public class Longhorn extends Critter {
 		if(isBevo == 9)
 			identity = "I am Bevo";
 		lastDir = 0;
+		age = 0;
 	}
-
+	
+	//Graze
 	@Override
 	public void doTimeStep() {
 		// TODO Auto-generated method stub
@@ -19,10 +22,22 @@ public class Longhorn extends Critter {
 			lastDir = 4;
 		else
 			lastDir = 0;
+		
 		walk(lastDir);
+		//there can only be one! or a few...
+		if(identity != "I am Bevo"){
+			if(age == 20 || age == 40){
+				Longhorn offspring = new Longhorn();
+				reproduce(offspring, 0)
+			}
+			
+		}
+		
+		age++;
 
 	}
 
+	//Bevo never runs from a fight
 	@Override
 	public boolean fight(String oponent) {
 		if(identity == "I am Bevo")
