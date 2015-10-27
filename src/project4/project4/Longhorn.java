@@ -28,7 +28,7 @@ public class Longhorn extends Critter {
 		if(identity != "I am Bevo"){
 			if(age == 20 || age == 40){
 				Longhorn offspring = new Longhorn();
-				reproduce(offspring, 0)
+				reproduce(offspring, 0);
 			}
 			
 		}
