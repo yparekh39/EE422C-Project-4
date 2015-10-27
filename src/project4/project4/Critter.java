@@ -349,6 +349,7 @@ public abstract class Critter {
 			algaeToAdd.setEnergy(Params.start_energy);
 			algaeToAdd.setXCoord(rand.nextInt(Params.world_width));
 			algaeToAdd.setYCoord(rand.nextInt(Params.world_height));
+			population.add(algaeToAdd);
 		}
 		
 		/*ADDING BABIES*/
