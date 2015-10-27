@@ -126,20 +126,32 @@ public abstract class Critter {
 			case 1:
 				offspring.x_coord = (x_coord+1) % Params.world_width;
 				offspring.y_coord = (y_coord-1) % Params.world_height;
+				if(y_coord<0)
+					offspring.y_coord += Params.world_height;
 				break;
 			case 2:
 				offspring.y_coord = (y_coord-1) % Params.world_height;
+				if(y_coord<0)
+					offspring.y_coord += Params.world_height;
 				break;
 			case 3:
 				offspring.y_coord = (y_coord-1) % Params.world_height;
 				offspring.x_coord = (x_coord-1) % Params.world_width;
+				if(y_coord<0)
+					offspring.y_coord += Params.world_height;
+				if(x_coord<0)
+					offspring.x_coord += Params.world_width;
 				break;
 			case 4:
 				offspring.x_coord = (x_coord-1) % Params.world_width;
+				if(x_coord<0)
+					offspring.x_coord += Params.world_width;
 				break;
 			case 5:
 				offspring.x_coord = (x_coord-1) % Params.world_width;
 				offspring.y_coord = (y_coord+1) % Params.world_height;
+				if(x_coord<0)
+					offspring.x_coord += Params.world_width;
 				break;
 			case 6:
 				offspring.y_coord = (y_coord+1) % Params.world_height;
