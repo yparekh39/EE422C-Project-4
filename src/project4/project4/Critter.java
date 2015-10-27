@@ -167,6 +167,8 @@ public abstract class Critter {
 			critterClass = Class.forName(critter_class_name);
 		} catch (ClassNotFoundException e) {
 			throw new InvalidCritterException(critter_class_name);
+		} catch (NoClassDefFoundError e) {
+			throw new InvalidCritterException(critter_class_name);
 		}
 		try {
 			constructor = critterClass.getConstructor();
@@ -261,11 +263,12 @@ public abstract class Critter {
 			iterator.next().doTimeStep();
 		}		
 
-		/*Resolve Encounters and runaways*/
-		ArrayDeque<Critter> runaways = new java.util.ArrayDeque<Critter>();
-		for(int a = 0; a < population.size()-1; a++){
-			Critter firstOccupier = population.get(a);
-			for(int b = a+1; b < population.size(); b++){
+		
+		/*ENCOUNTER HANDLING SECOND ATTEMPT*/
+		int i = 0;
+		while(i < population.size()){
+			Critter firstOccupier = population.get(i);
+			for(int b = i+1; b < population.size(); b++){
 				Critter secondOccupier = population.get(b);
 				//ENCOUNTER HANDLING
 				if(firstOccupier.x_coord == secondOccupier.x_coord && firstOccupier.y_coord == secondOccupier.y_coord){
@@ -325,12 +328,16 @@ public abstract class Critter {
 						
 						/*REMOVE LOSER DOES THIS WORK I THINK IT DOES BECAUSE IT REFERS TO THE ORIGINAL OBJECT*/
 						population.remove(loser);
-						if(loser == firstOccupier)
-							a-=1;//reexamines the current position on next outer iteration because list of critters will have shifted to replace this critter
+						if(loser == firstOccupier){
+							b = population.size();//break out of inner loop because firstOccupier is gone
+							i--;//reexamine position we just removed from (firstOccupier has been replaced)
+						}
+							
 					}//END FIGHT HANDLING		
 				}//END ENCOUNTER HANDLING
 			}//end for loop b
-		}//end for loop a
+			i++;
+		}
 
 		/*DEDUCT REST ENERGY*/
 		for(Critter current: population)
@@ -342,13 +349,14 @@ public abstract class Critter {
 			algaeToAdd.setEnergy(Params.start_energy);
 			algaeToAdd.setXCoord(rand.nextInt(Params.world_width));
 			algaeToAdd.setYCoord(rand.nextInt(Params.world_height));
+			population.add(algaeToAdd);
 		}
 		
 		/*ADDING BABIES*/
 		population.addAll(babies);
 		
 		/*ClEANING DEAD CRITTERS*/
-		int i = 0;
+		i = 0;
 		while(i < population.size()){
 			if(population.get(i).energy <= 0)
 				population.remove(i);
