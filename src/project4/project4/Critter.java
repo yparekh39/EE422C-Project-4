@@ -164,7 +164,17 @@ public abstract class Critter {
 	
 	public static List<Critter> getInstances(String critter_class_name) throws InvalidCritterException {
 		List<Critter> result = new java.util.ArrayList<Critter>();
-	
+		Class<?> critterClass;
+		try {
+			critterClass = Class.forName(critter_class_name);
+		} catch (ClassNotFoundException e) {
+			throw new InvalidCritterException(critter_class_name);
+		}
+		for (Critter c : population) {
+			if (critterClass.isInstance(c)) {
+				result.add(c);
+			}
+		}
 		return result;
 	}
 	
@@ -220,9 +230,7 @@ public abstract class Critter {
 		Iterator<Critter> iterator = population.iterator();
 		while(iterator.hasNext()) {
 			iterator.next().doTimeStep();
-		}
-		displayWorld();
-		
+		}		
 
 		/*Resolve Encounters and runaways*/
 		ArrayDeque<Critter> runaways = new java.util.ArrayDeque<Critter>();
@@ -381,10 +389,10 @@ public abstract class Critter {
 			world[c.x_coord+1][c.y_coord+1] = c.toString().charAt(0);
 		}
 		for (int i = 0; i < (Params.world_width+2); i++){
-			System.out.println();
 			for (int j = 0; j < (Params.world_height+2); j++) {
 				System.out.print(world[i][j]);
 			}
+			System.out.println();
 		}
 	}
 }
