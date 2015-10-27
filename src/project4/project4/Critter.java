@@ -200,6 +200,8 @@ public abstract class Critter {
 			critterClass = Class.forName(critter_class_name);
 		} catch (ClassNotFoundException e) {
 			throw new InvalidCritterException(critter_class_name);
+		} catch (NoClassDefFoundError e) {
+			throw new InvalidCritterException(critter_class_name);
 		}
 		for (Critter c : population) {
 			if (critterClass.isInstance(c)) {
